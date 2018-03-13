@@ -4,9 +4,10 @@ def op(op: Char, a: Double, b: Double) = (op, a, b) match {
   case ('+', x, y) => x + y
   case ('-', x, y) => x - y
   case ('*', x, y) => x * y
-  case ('/', x, 0) => "Can't divide by 0"
+  case ('/', _, 0) => "Can't divide by 0"
   case ('/', x, y) => x / y
   case ('!', x, _) => factorial(x)
+  case (_, _, _) => "Invalid operation"
 }
 
 def factorial(a: Double): Double = a match {
