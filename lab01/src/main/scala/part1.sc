@@ -62,6 +62,17 @@ def sqrt(n: Double): Double = {
   approx(n, 1.0)
 }
 
+def prime(n: Double): String = {
+  val sqrtN = sqrt(n).floor
+  def helper(n: Double, sqrt: Double): String = (n, sqrt) match {
+    case (n, 1) => n + " is prime !"
+    case (n, sqrt) if n%sqrt == 0 => "Not a prime number"
+    case (n, sqrt) if n%sqrt != 0 => helper(n, sqrt - 1)
+  }
+
+  helper(n, sqrtN)
+}
+
 
 opBinary('+', 2, 3)
 opBinary('-', 4, 5)
@@ -80,4 +91,6 @@ gcd(167, 5)
 solve(1,6,9)
 
 sqrt(9)
+
+prime(7)
 
