@@ -20,10 +20,11 @@ def opMemory(str: String, value: Double): Unit = {
 }
 
 def factorial(a: Double): Double = {
-  def loop (a: Double, acc: Double): Double = a match {
+  def loop(a: Double, acc: Double): Double = a match {
     case 1 => acc
     case _ => loop(a - 1, acc * a)
   }
+
   loop(a, 1.0)
 }
 
@@ -40,8 +41,8 @@ def solve(a: Double, b: Double, c: Double): (Any, Any) = {
       (double, double)
     case delta if delta > 0 =>
       val sqrtDelta = math.sqrt(delta)
-      val real1 = (- b + sqrtDelta) / (2 * a)
-      val real2 = (- b - sqrtDelta) / (2 * a)
+      val real1 = (-b + sqrtDelta) / (2 * a)
+      val real2 = (-b - sqrtDelta) / (2 * a)
       (real1, real2)
     case delta if delta < 0 =>
       val sqrtDelta = math.sqrt(-delta)
@@ -54,21 +55,24 @@ def solve(a: Double, b: Double, c: Double): (Any, Any) = {
 
 def sqrt(n: Double): Double = {
   def approx(n: Double, x: Double): Double = {
-      math.abs(x * x - n) / n match {
+    math.abs(x * x - n) / n match {
       case e if e < epsilon => x
       case e if e >= epsilon => approx(n, (x + (n / x)) / 2)
     }
   }
+
   approx(n, 1.0)
 }
 
 def prime(n: Double): String = {
   val sqrtN = sqrt(n).floor
+
   def helper(n: Double, upperBound: Double): String = (n, upperBound) match {
     case (_, 1) => n + " is prime !"
-    case (a, b) if a%b == 0 => "Not a prime number"
-    case (_,_) => helper(n, upperBound - 1)
+    case (a, b) if a % b == 0 => "Not a prime number"
+    case (_, _) => helper(n, upperBound - 1)
   }
+
   helper(n, sqrtN)
 }
 
@@ -87,7 +91,7 @@ memory.get("a")
 
 gcd(167, 5)
 
-solve(1,6,9)
+solve(1, 6, 9)
 
 sqrt(9)
 
