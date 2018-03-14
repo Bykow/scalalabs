@@ -64,12 +64,11 @@ def sqrt(n: Double): Double = {
 
 def prime(n: Double): String = {
   val sqrtN = sqrt(n).floor
-  def helper(n: Double, sqrt: Double): String = (n, sqrt) match {
-    case (n, 1) => n + " is prime !"
-    case (n, sqrt) if n%sqrt == 0 => "Not a prime number"
-    case (n, sqrt) if n%sqrt != 0 => helper(n, sqrt - 1)
+  def helper(n: Double, upperBound: Double): String = (n, upperBound) match {
+    case (_, 1) => n + " is prime !"
+    case (a, b) if a%b == 0 => "Not a prime number"
+    case (_,_) => helper(n, upperBound - 1)
   }
-
   helper(n, sqrtN)
 }
 
