@@ -1,3 +1,5 @@
+import scala.annotation.tailrec
+
 var memory: Map[String, Double] = Map()
 val epsilon = 0.0001
 
@@ -10,25 +12,21 @@ def opBinary(op: Char, a: Double, b: Double) = (op, a, b) match {
   case (_, _, _) => "Invalid operation"
 }
 
-def opUnary(op: String, a: Double) = (op, a) match {
-  case ("!", x) => factorial(x)
-  case ("sqrt", x) => sqrt(x)
-}
-
 def opMemory(str: String, value: Double): Unit = {
   memory += (str -> value)
 }
 
-def factorial(a: Double): Double = {
-  def loop(a: Double, acc: Double): Double = a match {
+def factorial(a: Int): Int = {
+  @tailrec
+  def loop(a: Int, acc: Int): Int = a match {
     case 1 => acc
     case _ => loop(a - 1, acc * a)
   }
 
-  loop(a, 1.0)
+  loop(a, 1)
 }
 
-def gcd(a: Double, b: Double): Double = {
+def gcd(a: Int, b: Int): Int = {
   if (b == 0) a else gcd(b, a % b)
 }
 
@@ -54,6 +52,7 @@ def solve(a: Double, b: Double, c: Double): (Any, Any) = {
 }
 
 def sqrt(n: Double): Double = {
+  @tailrec
   def approx(n: Double, x: Double): Double = {
     math.abs(x * x - n) / n match {
       case e if e < epsilon => x
@@ -64,16 +63,39 @@ def sqrt(n: Double): Double = {
   approx(n, 1.0)
 }
 
-def prime(n: Double): String = {
-  val sqrtN = sqrt(n).floor
+def prime(n: Int): String = {
+  val sqrtN = sqrt(n).floor.toInt
 
-  def helper(n: Double, upperBound: Double): String = (n, upperBound) match {
+  @tailrec
+  def primeHelper(n: Int, upperBound: Int): String = (n, upperBound) match {
     case (_, 1) => n + " is prime !"
     case (a, b) if a % b == 0 => "Not a prime number"
-    case (_, _) => helper(n, upperBound - 1)
+    case _ => primeHelper(n, upperBound - 1)
   }
 
-  helper(n, sqrtN)
+  primeHelper(n, sqrtN)
+}
+
+def egcd(a: Int, b: Int): (Int, Int, Int) = {
+
+  @tailrec
+  def egcdHelper(r1: Int, u1: Int, v1: Int, r2: Int, u2: Int, v2: Int): (Int, Int, Int) = {
+    r2 match {
+      case x if x != 0 =>
+        val q = r1 / r2
+        egcdHelper(r2, u2, v2, r1 - q * r2, u1 - q * u2, v1 - q * v2)
+      case _ => (u1, v1, r1)
+    }
+  }
+
+  egcdHelper(a, 1, 0, b, 0, 1)
+}
+
+def modInvert(a: Int, b: Int): Any = {
+  egcd(a, b) match {
+    case (_, _, z) if z != 1 => "Mod Invert does not exists"
+    case (x, _, _) => x
+  }
 }
 
 
@@ -95,5 +117,8 @@ solve(1, 6, 9)
 
 sqrt(9)
 
-prime(7)
+prime(11)
 
+egcd(5, 167)
+
+modInvert(3, 12)
