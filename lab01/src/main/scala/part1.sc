@@ -3,19 +3,40 @@ import scala.annotation.tailrec
 var memory: Map[String, Double] = Map()
 val epsilon = 0.0001
 
+/**
+  * Computes an binary operation given two operands and one operator
+  *
+  * @param op the operator
+  * @param a operand a
+  * @param b operand b
+  * @return Any, String if an error has occured, double otherwise
+  */
 def opBinary(op: Char, a: Double, b: Double) = (op, a, b) match {
   case ('+', x, y) => x + y
   case ('-', x, y) => x - y
   case ('*', x, y) => x * y
   case ('/', _, 0) => "Can't divide by 0"
   case ('/', x, y) => x / y
-  case (_, _, _) => "Invalid operation"
+  case _ => "Invalid operation"
 }
 
+/**
+  * Memory management, adds a given value to a string (variable name)
+  *
+  * @param str name of the variable
+  * @param value value in double
+  */
 def opMemory(str: String, value: Double): Unit = {
   memory += (str -> value)
 }
 
+/**
+  * Computes the factorial of given Int.
+  * Uses tailrec optimization
+  *
+  * @param a int to factorial
+  * @return Int result
+  */
 def factorial(a: Int): Int = {
   @tailrec
   def loop(a: Int, acc: Int): Int = a match {
@@ -26,10 +47,27 @@ def factorial(a: Int): Int = {
   loop(a, 1)
 }
 
-def gcd(a: Int, b: Int): Int = {
-  if (b == 0) a else gcd(b, a % b)
+/**
+  * Computes the gcd between two Ints
+  * Uses tailrec optimization
+  *
+  * @param a
+  * @param b
+  * @return Int result
+  */
+def gcd(a: Int, b: Int): Int = (a,b) match {
+  case (_,0) => a
+  case _ => gcd(b, a % b)
 }
 
+/**
+  * Solves an equation of second degree
+  *
+  * @param a x^2 coeficient
+  * @param b x^1 coeficient
+  * @param c x^0 coeficient
+  * @return (Any, Any) depends on real or complex solutions
+  */
 def solve(a: Double, b: Double, c: Double): (Any, Any) = {
   def delta(a: Double, b: Double, c: Double): Double = (b * b) - (4 * a * c)
 
@@ -51,6 +89,13 @@ def solve(a: Double, b: Double, c: Double): (Any, Any) = {
   }
 }
 
+/**
+  * Computes the square root of given Double
+  * Uses tailrec optimization
+  *
+  * @param n operand
+  * @return Double, result
+  */
 def sqrt(n: Double): Double = {
   @tailrec
   def approx(n: Double, x: Double): Double = {
@@ -63,6 +108,13 @@ def sqrt(n: Double): Double = {
   approx(n, 1.0)
 }
 
+/**
+  * Return whether n is prime or not
+  * Uses tailrec optimization
+  *
+  * @param n
+  * @return String
+  */
 def prime(n: Int): String = {
   val sqrtN = sqrt(n).floor.toInt
 
@@ -76,6 +128,13 @@ def prime(n: Int): String = {
   primeHelper(n, sqrtN)
 }
 
+/**
+  * Euclidian extended gcd
+  *
+  * @param a
+  * @param b
+  * @return Euclidian decomposition
+  */
 def egcd(a: Int, b: Int): (Int, Int, Int) = {
 
   @tailrec
@@ -91,6 +150,13 @@ def egcd(a: Int, b: Int): (Int, Int, Int) = {
   egcdHelper(a, 1, 0, b, 0, 1)
 }
 
+/**
+  * Invert modulo
+  *
+  * @param a
+  * @param b
+  * @return Any, String if mod invert does not exists, Int otherwise
+  */
 def modInvert(a: Int, b: Int): Any = {
   egcd(a, b) match {
     case (_, _, z) if z != 1 => "Mod Invert does not exists"
@@ -115,7 +181,7 @@ gcd(167, 5)
 
 solve(1, 6, 9)
 
-sqrt(9)
+math.sqrt(-9)
 
 prime(11)
 
