@@ -15,7 +15,10 @@ def opBinary(op: Char, a: Double, b: Double) = (op, a, b) match {
   case ('+', x, y) => x + y
   case ('-', x, y) => x - y
   case ('*', x, y) => x * y
+  case ('^', x, y) => power(x.toInt,y.toInt)
   case ('/', _, 0) => "Can't divide by 0"
+  case ('%', _, 0) => "Can't mod by 0"
+  case ('%', x, y) => x % y
   case ('/', x, y) => x / y
   case _ => "Invalid operation"
 }
@@ -28,6 +31,22 @@ def opBinary(op: Char, a: Double, b: Double) = (op, a, b) match {
   */
 def opMemory(str: String, value: Double): Unit = {
   memory += (str -> value)
+}
+
+/**
+  * Power function
+  *
+  * @param base
+  * @param exp
+  * @return result
+  */
+def power(base: Int, exp: Int): Double = {
+  @tailrec
+  def _power(result: Int, exp: Int): Int = exp match {
+    case 0 => result
+    case _ => _power(result*base, exp-1)
+  }
+  _power(1, exp).toDouble
 }
 
 /**
@@ -188,3 +207,5 @@ prime(11)
 egcd(5, 167)
 
 modInvert(3, 12)
+
+power(2, 2)
