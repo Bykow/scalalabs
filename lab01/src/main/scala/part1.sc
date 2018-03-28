@@ -2,6 +2,7 @@ import scala.annotation.tailrec
 
 var memory: Map[String, Double] = Map()
 val epsilon = 0.0001
+val variableValid = "([a-zA-Z]+)".r
 
 /**
   * Computes an binary operation given two operands and one operator
@@ -16,11 +17,21 @@ def opBinary(op: Char, a: Double, b: Double) = (op, a, b) match {
   case ('-', x, y) => x - y
   case ('*', x, y) => x * y
   case ('^', x, y) => power(x.toInt,y.toInt)
-  case ('/', _, 0) => "Can't divide by 0"
-  case ('%', _, 0) => "Can't mod by 0"
+  case ('/', _, 0) => throw new Exception("Can't divide by 0")
+  case ('%', _, 0) => throw new Exception("Can't mod by 0")
   case ('%', x, y) => x % y
   case ('/', x, y) => x / y
-  case _ => "Invalid operation"
+  case _ => throw new Exception("Invalid operation")
+}
+
+/**
+  * Get a value from the memory specified by variable name
+  *
+  * @param str
+  * @return Double
+  */
+def getFromMemory(str: String): Double = {
+  memory.getOrElse(str, throw new Exception("No such variable Name"))
 }
 
 /**
@@ -29,8 +40,9 @@ def opBinary(op: Char, a: Double, b: Double) = (op, a, b) match {
   * @param str name of the variable
   * @param value value in double
   */
-def opMemory(str: String, value: Double): Unit = {
-  memory += (str -> value)
+def opMemory(str: String, value: Double): Unit = str match {
+  case variableValid(x) => memory += (x -> value)
+  case _ => throw new Exception("Variable is not conform to regex")
 }
 
 /**
@@ -42,11 +54,11 @@ def opMemory(str: String, value: Double): Unit = {
   */
 def power(base: Int, exp: Int): Double = {
   @tailrec
-  def _power(result: Int, exp: Int): Int = exp match {
+  def powerHelper(result: Int, exp: Int): Int = exp match {
     case 0 => result
-    case _ => _power(result*base, exp-1)
+    case _ => powerHelper(result*base, exp-1)
   }
-  _power(1, exp).toDouble
+  powerHelper(1, exp).toDouble
 }
 
 /**
@@ -193,6 +205,9 @@ opBinary('/', 5, 0)
 factorial(3)
 
 opMemory("a", 3)
+opMemory("a", 4)
+
+getFromMemory("a")
 
 memory.get("a")
 
