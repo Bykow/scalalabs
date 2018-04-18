@@ -2,23 +2,25 @@ package calculator.parser
 
 import calculator.Main.memory
 import calculator.lexer._
+
 import scala.io.Source
 
-class Parser(source:Source) extends Lexer(source:Source) {
-
-
+class Parser(source: Source) extends Lexer(source: Source) {
   import Trees._
   import calculator.lexer.Tokens._
-
-  def computeSource: Double = { readToken; parseExpr.compute }
-
-  def printTree: Unit = { readToken; println(parseExpr) }
 
   /** Store the current token, as read from the lexer. */
   private var currentToken: Token = Token(BAD)
 
-  /** update currentToken using nextToken in the Lexer. */
-  def readToken: Unit = { currentToken = nextToken }
+  def computeSource: Double = {
+    readToken;
+    parseExpr.compute
+  }
+
+  def printTree: Unit = {
+    readToken;
+    println(parseExpr)
+  }
 
   /** ""Eats"" the expected token, or terminates with an error. */
   private def eat(tokenClass: TokenClass): Unit = if (tokenClass == currentToken.info.tokenClass) readToken else expected(tokenClass)
@@ -35,7 +37,7 @@ class Parser(source:Source) extends Lexer(source:Source) {
     if (currentToken.info == EQSIGN) {
       eat(EQSIGN)
       e match {
-        case id @ Identifier(_) => {
+        case id@Identifier(_) => {
           val rhs = parseEquals
           rhs match {
             case Assign(_, _) => fatalError("Invalid variable declaration !")
@@ -65,20 +67,25 @@ class Parser(source:Source) extends Lexer(source:Source) {
     e
   }
 
-  // Implement the other grammar methods
-  ???
-
   private def parseSimpleExpr: ExprTree = {
     // Here you want to match simple expressions such as NUM(value) and parse them (for example with the parseExprTreeToken method).
     currentToken.info match {
       case LPAREN => parseParenthesis // Parenthesis
-      case _      => expected(???)
+      case _ => expected(???)
     }
   }
+
+  // Implement the other grammar methods
+  ???
 
   private def parseExprTreeToken[T <: ExprTree](retTree: T): ExprTree = {
     readToken
     retTree
+  }
+
+  /** update currentToken using nextToken in the Lexer. */
+  def readToken: Unit = {
+    currentToken = nextToken
   }
 
   private def parseParenthesis(): ExprTree = {
