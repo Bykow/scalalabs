@@ -1,6 +1,7 @@
 package calculator.lexer
 
 import scala.io.Source
+import scala.language.postfixOps
 
 class Lexer(source: Source) {
 
@@ -23,21 +24,27 @@ class Lexer(source: Source) {
       if (position == 0) nextChar
       position = source.pos
 
-      val numPattern = "[0-9]".r
-      val keywordPattern = "[a-zA-Z]".r
+      val numPattern = "([0-9])".r
+      val keywordPattern = "([a-zA-Z])".r
       ch match {
         case ' ' => skipToken
         case '+' => setToken(PLUS)
         case '-' => setToken(MINUS)
-        case '*' => setToken(TIMES)
+        case '*' => setToken(MULT)
         case '/' => setToken(DIVIDE)
         case '%' => setToken(MODULO)
         case '^' => setToken(POWER)
         case '(' => setToken(LPAREN)
         case ')' => setToken(RPAREN)
         case '=' => setToken(EQSIGN)
-        case numPattern(_) => setToken(NUMBER(readMultiple('0' to '9' toList)))
-        case keywordPattern(_) => setToken(keywordOrId(readMultiple('a' to 'Z' toList)))
+        case numPattern(_) => {
+          val value = readMultiple('0' to '9' toList)
+          Token(NUMLIT(value)).setPos(position)
+        }
+        case keywordPattern(_) => {
+          val value = readMultiple('a' to 'Z' toList)
+          Token(keywordOrId(value)).setPos(position)
+        }
         case _ => setToken(BAD)
       }
     }

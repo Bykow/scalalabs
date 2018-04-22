@@ -6,6 +6,7 @@ import calculator.lexer._
 import scala.io.Source
 
 class Parser(source: Source) extends Lexer(source: Source) {
+
   import Trees._
   import calculator.lexer.Tokens._
 
@@ -13,12 +14,12 @@ class Parser(source: Source) extends Lexer(source: Source) {
   private var currentToken: Token = Token(BAD)
 
   def computeSource: Double = {
-    readToken;
+    readToken
     parseExpr.compute
   }
 
   def printTree: Unit = {
-    readToken;
+    readToken
     println(parseExpr)
   }
 
@@ -55,14 +56,56 @@ class Parser(source: Source) extends Lexer(source: Source) {
   }
 
   private def parsePlusMinus: ExprTree = {
-    var e = parseSimpleExpr // You should modify this call, to respect operations priority !
+    var e = parseMultDivide
     while (currentToken.info == PLUS || currentToken.info == MINUS) {
       if (currentToken.info == PLUS) {
         eat(PLUS)
-        e = Plus(e, parseSimpleExpr) // You should modify this call, to respect operations priority !
+        e = Plus(e, parseMultDivide)
       } else {
-        ???
+        eat(MINUS)
+        e = Minus(e, parseMultDivide)
       }
+    }
+    e
+  }
+
+  private def parseMultDivide: ExprTree = {
+    var e = parseModulo
+    while (currentToken.info == MULT || currentToken.info == DIVIDE) {
+      if (currentToken.info == MULT) {
+        eat(MULT)
+        e = Mult(e, parseModulo)
+      } else {
+        eat(DIVIDE)
+        e = Divide(e, parseModulo)
+      }
+    }
+    e
+  }
+
+  private def parseModulo: ExprTree = {
+    var e = parsePower
+    while (currentToken.info == MODULO) {
+      eat(MODULO)
+      e = Modulo(e, parsePower)
+    }
+    e
+  }
+
+  private def parsePower: ExprTree = {
+    var e = parseFactorial
+    while (currentToken.info == POWER) {
+      eat(POWER)
+      e = Power(e, parseFactorial)
+    }
+    e
+  }
+
+  private def parseFactorial: ExprTree = {
+    var e = parseSimpleExpr
+    while (currentToken.info == FACTORIAL) {
+      eat(FACTORIAL)
+      e = Factorial(e, parseSimpleExpr)
     }
     e
   }
@@ -71,12 +114,13 @@ class Parser(source: Source) extends Lexer(source: Source) {
     // Here you want to match simple expressions such as NUM(value) and parse them (for example with the parseExprTreeToken method).
     currentToken.info match {
       case LPAREN => parseParenthesis // Parenthesis
+      case NUMLIT(value) => parseExprTreeToken(NumLit(value))
       case _ => expected(???)
     }
   }
 
   // Implement the other grammar methods
-  ???
+  // ???
 
   private def parseExprTreeToken[T <: ExprTree](retTree: T): ExprTree = {
     readToken
@@ -88,7 +132,7 @@ class Parser(source: Source) extends Lexer(source: Source) {
     currentToken = nextToken
   }
 
-  private def parseParenthesis(): ExprTree = {
+  private def parseParenthesis: ExprTree = {
     eat(LPAREN)
     val ret = parsePlusMinus
     eat(RPAREN)

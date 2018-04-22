@@ -1,22 +1,22 @@
 import scala.annotation.tailrec
 
-var memory: Map[String, Double] = Map()
 val epsilon = 0.0001
 val variableValid = "([a-zA-Z]+)".r
+var memory: Map[String, Double] = Map()
 
 /**
   * Computes an binary operation given two operands and one operator
   *
   * @param op the operator
-  * @param a operand a
-  * @param b operand b
+  * @param a  operand a
+  * @param b  operand b
   * @return Any, String if an error has occured, double otherwise
   */
 def opBinary(op: Char, a: Double, b: Double) = (op, a, b) match {
   case ('+', x, y) => x + y
   case ('-', x, y) => x - y
   case ('*', x, y) => x * y
-  case ('^', x, y) => power(x.toInt,y.toInt)
+  case ('^', x, y) => power(x.toInt, y.toInt)
   case ('/', _, 0) => throw new Exception("Can't divide by 0")
   case ('%', _, 0) => throw new Exception("Can't mod by 0")
   case ('%', x, y) => x % y
@@ -37,7 +37,7 @@ def getFromMemory(str: String): Double = {
 /**
   * Memory management, adds a given value to a string (variable name)
   *
-  * @param str name of the variable
+  * @param str   name of the variable
   * @param value value in double
   */
 def opMemory(str: String, value: Double): Unit = str match {
@@ -56,8 +56,9 @@ def power(base: Int, exp: Int): Double = {
   @tailrec
   def powerHelper(result: Int, exp: Int): Int = exp match {
     case 0 => result
-    case _ => powerHelper(result*base, exp-1)
+    case _ => powerHelper(result * base, exp - 1)
   }
+
   powerHelper(1, exp).toDouble
 }
 
@@ -86,8 +87,8 @@ def factorial(a: Int): Int = {
   * @param b
   * @return Int result
   */
-def gcd(a: Int, b: Int): Int = (a,b) match {
-  case (_,0) => a
+def gcd(a: Int, b: Int): Int = (a, b) match {
+  case (_, 0) => a
   case _ => gcd(b, a % b)
 }
 
