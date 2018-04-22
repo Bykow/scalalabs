@@ -36,6 +36,7 @@ class Lexer(source: Source) {
         case '^' => setToken(POWER)
         case '(' => setToken(LPAREN)
         case ')' => setToken(RPAREN)
+        case '!' => setToken(FACTORIAL)
         case '=' => setToken(EQSIGN)
         case numPattern(_) => {
           val value = readMultiple('0' to '9' toList)

@@ -105,7 +105,7 @@ class Parser(source: Source) extends Lexer(source: Source) {
     var e = parseSimpleExpr
     while (currentToken.info == FACTORIAL) {
       eat(FACTORIAL)
-      e = Factorial(e, parseSimpleExpr)
+      e = Factorial(e)
     }
     e
   }
@@ -115,6 +115,9 @@ class Parser(source: Source) extends Lexer(source: Source) {
     currentToken.info match {
       case LPAREN => parseParenthesis // Parenthesis
       case NUMLIT(value) => parseExprTreeToken(NumLit(value))
+      case ID(value) => parseExprTreeToken(Identifier(value))
+      // case GCD => parseExprTreeToken(Gcd())
+      // case SQRT =>
       case _ => expected(???)
     }
   }
