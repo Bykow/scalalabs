@@ -121,7 +121,7 @@ class Parser(source: Source) extends Lexer(source: Source) {
         eat(SQRT)
         Sqrt(parseParenthesis)
       }
-      case _ => expected(???)
+      case _ => expected(currentToken.tokenClass)
     }
   }
 

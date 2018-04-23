@@ -7,7 +7,7 @@ class Lexer(source: Source) {
 
   import Tokens._
 
-  val numeric: List[Char] = ('0' to '9').toList
+  val numeric: List[Char] = ('0' to '9').toList ++ List('.')
   val alphabetic: List[Char] = ('a' to 'z').toList ++ ('A' to 'Z').toList
   val alphanumeric: List[Char] = numeric ++ alphabetic ++ List('_')
 
@@ -24,12 +24,23 @@ class Lexer(source: Source) {
       if (position == 0) nextChar
       position = source.pos
 
-      val numPattern = "([0-9])".r
+      val numPattern = "([\\d]*\\.?[\\d]+)*".r
       val keywordPattern = "([a-zA-Z])".r
+
       ch match {
+        case '-' => {
+          nextChar
+          ch match {
+            case numPattern(_) => {
+              val value = readMultiple(numeric)
+              Token(NUMLIT("-" + value)).setPos(position)
+            }
+            case _ => setToken(MINUS)
+          }
+        }
+
         case ' ' => skipToken
         case '+' => setToken(PLUS)
-        case '-' => setToken(MINUS)
         case '*' => setToken(MULT)
         case '/' => setToken(DIVIDE)
         case '%' => setToken(MODULO)
@@ -64,13 +75,13 @@ class Lexer(source: Source) {
 
   /** Moves the iterator to the next Char and set previous Token */
   def setToken(tkn: TokenInfo): Token = {
-    nextChar;
+    nextChar
     Token(tkn).setPos(position)
   }
 
   /** Moves the iterator to the next Char and skip the current token, useful for empty Char */
   def skipToken: Token = {
-    nextChar;
+    nextChar
     nextToken
   }
 
@@ -87,7 +98,7 @@ class Lexer(source: Source) {
 
   /** Moves the iterator to the next Char of the input source */
   def nextChar: Unit = if (source.hasNext) ch = source.next() else {
-    ch = ' ';
+    ch = ' '
     eof = true
   }
 
