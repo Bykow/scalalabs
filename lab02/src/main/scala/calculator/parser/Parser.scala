@@ -116,14 +116,26 @@ class Parser(source: Source) extends Lexer(source: Source) {
       case LPAREN => parseParenthesis // Parenthesis
       case NUMLIT(value) => parseExprTreeToken(NumLit(value))
       case ID(value) => parseExprTreeToken(Identifier(value))
-      // case GCD => parseExprTreeToken(Gcd())
-      // case SQRT =>
+      case GCD => {
+        eat(GCD)
+        parseParenthesisTuple
+      }
+      case SQRT => {
+        eat(SQRT)
+        Sqrt(parseParenthesis)
+      }
       case _ => expected(???)
     }
   }
 
-  // Implement the other grammar methods
-  // ???
+  private def parseParenthesisTuple: ExprTree = {
+    eat(LPAREN)
+    val lhs = parsePlusMinus
+    eat(COMMA)
+    val rhs = parsePlusMinus
+    eat(RPAREN)
+    Gcd(lhs, rhs)
+  }
 
   private def parseExprTreeToken[T <: ExprTree](retTree: T): ExprTree = {
     readToken

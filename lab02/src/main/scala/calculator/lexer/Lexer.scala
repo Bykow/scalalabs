@@ -38,12 +38,13 @@ class Lexer(source: Source) {
         case ')' => setToken(RPAREN)
         case '!' => setToken(FACTORIAL)
         case '=' => setToken(EQSIGN)
+        case ',' => setToken(COMMA)
         case numPattern(_) => {
-          val value = readMultiple('0' to '9' toList)
+          val value = readMultiple(numeric)
           Token(NUMLIT(value)).setPos(position)
         }
         case keywordPattern(_) => {
-          val value = readMultiple('a' to 'Z' toList)
+          val value = readMultiple(alphabetic)
           Token(keywordOrId(value)).setPos(position)
         }
         case _ => setToken(BAD)

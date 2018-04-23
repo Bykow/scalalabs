@@ -43,6 +43,8 @@ object Tokens {
 
   case object FACTORIAL extends TokenInfo with TokenClass
 
+  case object COMMA extends TokenInfo with TokenClass
+
   /** Functions */
   // case object MODINVERT extends TokenInfo with TokenClass
   // case object PRIME extends TokenInfo with TokenClass
