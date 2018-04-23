@@ -1,5 +1,7 @@
 package calculator.parser
 
+import calculator.Main.memory
+
 import scala.annotation.tailrec
 
 object Trees {
@@ -17,6 +19,8 @@ object Trees {
       case Factorial(value) => factorial(value.compute)
       case Gcd(lhs, rhs) => gcd(lhs.compute, rhs.compute)
       case Sqrt(value) => sqrt(value.compute)
+      case Assign(_,_) => Double.NegativeInfinity
+      case Identifier(value) => memory.getOrElse(value, Double.NegativeInfinity)
       case _ => 0
     }
   }

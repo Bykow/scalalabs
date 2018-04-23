@@ -44,7 +44,7 @@ class Lexer(source: Source) {
           Token(NUMLIT(value)).setPos(position)
         }
         case keywordPattern(_) => {
-          val value = readMultiple(alphabetic)
+          val value = readMultiple(alphanumeric)
           Token(keywordOrId(value)).setPos(position)
         }
         case _ => setToken(BAD)
