@@ -6,6 +6,13 @@ import scala.annotation.tailrec
 
 object Trees {
 
+  /**
+    * 0: normal result
+    * 1: assignment in memory
+    * 2: acces to memory
+    *
+    * To refactor with enum
+    */
   sealed trait ExprTree {
     @throws(classOf[Exception])
     def compute: (Int, String, Double) = this match {
@@ -13,16 +20,25 @@ object Trees {
       case Plus(lhs, rhs)           => (0, "", lhs.compute._3 + rhs.compute._3)
       case Minus(lhs, rhs)          => (0, "", lhs.compute._3 - rhs.compute._3)
       case Mult(lhs, rhs)           => (0, "", lhs.compute._3 * rhs.compute._3)
-      case Divide(lhs, rhs)         => (0, "", lhs.compute._3 / rhs.compute._3)
+      case Divide(lhs, rhs)         => {
+        val temp = rhs.compute._3
+        if (temp != 0) (0, "", lhs.compute._3 / temp) else throw new Exception("Can't divide by 0")
+      }
       case Power(lhs, rhs)          => (0, "", power(lhs.compute._3, rhs.compute._3))
-      case Modulo(lhs, rhs)         => (0, "", lhs.compute._3 % rhs.compute._3)
+      case Modulo(lhs, rhs)         => {
+        val temp = rhs.compute._3
+        if (temp != 0) (0, "", lhs.compute._3 % temp) else throw new Exception("Can't modulo by 0")
+      }
       case Factorial(value)         => (0, "", factorial(value.compute._3))
       case Gcd(lhs, rhs)            => (0, "", gcd(lhs.compute._3, rhs.compute._3))
-      case Sqrt(value)              => (0, "", sqrt(value.compute._3))
+      case Sqrt(value)              => {
+        val temp = value.compute._3
+        if (temp >= 0) (0, "", sqrt(value.compute._3)) else throw new Exception("Sqrt for negative number is undefined")
+      }
       case Assign(variable, value)  => (1, variable.value,  value.compute._3)
-      case Identifier(value)        => (2, value, memory.getOrElse(value, Double.NegativeInfinity))
+      case Identifier(value)        => (2, value, memory.getOrElse(value, throw new Exception("Unknown variable \"" + value + "\"")))
       case Neg(value)               => (0, "", -value.compute._3)
-      case _                        => (5, "",  0)
+      case _                        => throw new Exception("Error, no Token found (_)")
     }
   }
 
@@ -116,7 +132,7 @@ object Trees {
     * @return Double, result
     */
   def sqrt(n: Double): Double = {
-    if (n == 0) return 0
+    if (n <= 0) return 0
     @tailrec
     def approx(n: Double, x: Double): Double = {
       math.abs(x * x - n) / n match {
