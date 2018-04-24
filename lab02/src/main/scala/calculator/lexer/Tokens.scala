@@ -41,9 +41,11 @@ object Tokens {
 
   case object POWER extends TokenInfo with TokenClass // ^
 
-  case object FACTORIAL extends TokenInfo with TokenClass
+  case object FACTORIAL extends TokenInfo with TokenClass // !
 
-  case object COMMA extends TokenInfo with TokenClass
+  case object COMMA extends TokenInfo with TokenClass // ,
+
+  case object NEG extends TokenInfo with TokenClass // (-x)
 
   /** Functions */
   // case object MODINVERT extends TokenInfo with TokenClass
@@ -51,9 +53,10 @@ object Tokens {
   // case object SOLVE extends TokenInfo with TokenClass
   // case object EGCD extends TokenInfo with TokenClass
 
-  case object GCD extends TokenInfo with TokenClass
 
-  case object SQRT extends TokenInfo with TokenClass
+  case object GCD extends TokenInfo with TokenClass // gcd
+
+  case object SQRT extends TokenInfo with TokenClass // sqrt
 
   case object EQSIGN extends TokenInfo with TokenClass // =
 

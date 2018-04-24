@@ -8,20 +8,21 @@ object Trees {
 
   sealed trait ExprTree {
     @throws(classOf[Exception])
-    def compute: Double = this match {
-      case NumLit(value) => value toDouble
-      case Plus(lhs, rhs) => lhs.compute + rhs.compute
-      case Minus(lhs, rhs) => lhs.compute - rhs.compute
-      case Mult(lhs, rhs) => lhs.compute * rhs.compute
-      case Divide(lhs, rhs) => lhs.compute / rhs.compute
-      case Power(lhs, rhs) => power(lhs.compute, rhs.compute)
-      case Modulo(lhs, rhs) => lhs.compute % rhs.compute
-      case Factorial(value) => factorial(value.compute)
-      case Gcd(lhs, rhs) => gcd(lhs.compute, rhs.compute)
-      case Sqrt(value) => sqrt(value.compute)
-      case Assign(_,_) => Double.NegativeInfinity
-      case Identifier(value) => memory.getOrElse(value, Double.NegativeInfinity)
-      case _ => 0
+    def compute: (Int, String, Double) = this match {
+      case NumLit(value)            => (0, "", value toDouble)
+      case Plus(lhs, rhs)           => (0, "", lhs.compute._3 + rhs.compute._3)
+      case Minus(lhs, rhs)          => (0, "", lhs.compute._3 - rhs.compute._3)
+      case Mult(lhs, rhs)           => (0, "", lhs.compute._3 * rhs.compute._3)
+      case Divide(lhs, rhs)         => (0, "", lhs.compute._3 / rhs.compute._3)
+      case Power(lhs, rhs)          => (0, "", power(lhs.compute._3, rhs.compute._3))
+      case Modulo(lhs, rhs)         => (0, "", lhs.compute._3 % rhs.compute._3)
+      case Factorial(value)         => (0, "", factorial(value.compute._3))
+      case Gcd(lhs, rhs)            => (0, "", gcd(lhs.compute._3, rhs.compute._3))
+      case Sqrt(value)              => (0, "", sqrt(value.compute._3))
+      case Assign(variable, value)  => (1, variable.value,  value.compute._3)
+      case Identifier(value)        => (2, value, memory.getOrElse(value, Double.NegativeInfinity))
+      case Neg(value)               => (0, "", -value.compute._3)
+      case _                        => (5, "",  0)
     }
   }
 
@@ -46,6 +47,8 @@ object Trees {
   case class Gcd(lhs: ExprTree, rhs: ExprTree) extends ExprTree
 
   case class Sqrt(operand: ExprTree) extends ExprTree
+
+  case class Neg(value: ExprTree) extends ExprTree
 
   /** Leaves Expression Trees */
   case class NumLit(value: String) extends ExprTree {
@@ -113,6 +116,7 @@ object Trees {
     * @return Double, result
     */
   def sqrt(n: Double): Double = {
+    if (n == 0) return 0
     @tailrec
     def approx(n: Double, x: Double): Double = {
       math.abs(x * x - n) / n match {

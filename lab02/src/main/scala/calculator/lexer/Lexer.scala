@@ -14,6 +14,7 @@ class Lexer(source: Source) {
   var position: Int = 0
   var ch: Char = ' '
   var eof: Boolean = false
+  private var previousToken : Token = Token(BAD)
 
   /** Works like an iterator, and returns the next token from the input stream. */
   def nextToken: Token = {
@@ -28,17 +29,10 @@ class Lexer(source: Source) {
       val keywordPattern = "([a-zA-Z])".r
 
       ch match {
-        case '-' => {
-          nextChar
-          ch match {
-            case numPattern(_) => {
-              val value = readMultiple(numeric)
-              Token(NUMLIT("-" + value)).setPos(position)
-            }
-            case _ => setToken(MINUS)
-          }
+        case '-' => previousToken.info match {
+          case RPAREN | NUMLIT(_) | ID(_) | SQRT | GCD | FACTORIAL => setToken(MINUS)
+          case _ => setToken(NEG)
         }
-
         case ' ' => skipToken
         case '+' => setToken(PLUS)
         case '*' => setToken(MULT)
@@ -52,10 +46,12 @@ class Lexer(source: Source) {
         case ',' => setToken(COMMA)
         case numPattern(_) => {
           val value = readMultiple(numeric)
+          previousToken = Token(NUMLIT(value))
           Token(NUMLIT(value)).setPos(position)
         }
         case keywordPattern(_) => {
           val value = readMultiple(alphanumeric)
+          previousToken = Token(ID(value))
           Token(keywordOrId(value)).setPos(position)
         }
         case _ => setToken(BAD)
@@ -76,6 +72,7 @@ class Lexer(source: Source) {
   /** Moves the iterator to the next Char and set previous Token */
   def setToken(tkn: TokenInfo): Token = {
     nextChar
+    previousToken = Token(tkn)
     Token(tkn).setPos(position)
   }
 
@@ -89,11 +86,17 @@ class Lexer(source: Source) {
   def readMultiple(allowed: List[Char]): String = {
     var str = "" + ch
     nextChar
+    var dotFound : Int = 0
     while (allowed.contains(ch) && !eof) {
+      if (ch.equals('.')) dotFound += 1
       str += ch
       nextChar
     }
-    str
+    if (dotFound > 1) {
+      fatalError(" Malformed entry at: " + str)
+    } else {
+      str
+    }
   }
 
   /** Moves the iterator to the next Char of the input source */

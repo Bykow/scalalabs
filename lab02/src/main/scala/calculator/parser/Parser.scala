@@ -13,7 +13,7 @@ class Parser(source: Source) extends Lexer(source: Source) {
   /** Store the current token, as read from the lexer. */
   private var currentToken: Token = Token(BAD)
 
-  def computeSource: Double = {
+  def computeSource: (Int, String, Double) = {
     readToken
     parseExpr.compute
   }
@@ -34,6 +34,7 @@ class Parser(source: Source) extends Lexer(source: Source) {
   }
 
   private def parseEquals: ExprTree = {
+
     val e = parsePlusMinus
     if (currentToken.info == EQSIGN) {
       eat(EQSIGN)
@@ -43,7 +44,7 @@ class Parser(source: Source) extends Lexer(source: Source) {
           rhs match {
             case Assign(_, _) => fatalError("Invalid variable declaration !")
             case _ => {
-              memory += (id.value -> rhs.compute)
+              memory += (id.value -> rhs.compute._3)
               Assign(id, rhs)
             }
           }
@@ -120,6 +121,10 @@ class Parser(source: Source) extends Lexer(source: Source) {
       case SQRT => {
         eat(SQRT)
         Sqrt(parseParenthesis)
+      }
+      case NEG => {
+        eat(NEG)
+        Neg(parsePower)
       }
       case _ => expected(currentToken.tokenClass)
     }
