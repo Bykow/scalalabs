@@ -106,6 +106,7 @@ class Lexer(source: Source) {
     eof = true
   }
 
+  /** Whoops */
   def fatalError(msg: String): Nothing = {
     println("Fatal error", msg)
     sys.exit(1)
