@@ -62,7 +62,6 @@ class Lexer(source: Source) {
   /** Checks and set if the multiple Char found is a keyword or a variable */
   def keywordOrId(str: String): TokenInfo = {
     str.toLowerCase match {
-      case "factorial" => FACTORIAL
       case "gcd" => GCD
       case "sqrt" => SQRT
       case name => ID(name)
