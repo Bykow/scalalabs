@@ -38,6 +38,7 @@ object Trees {
   def factorial(a: Double): Double = {
     @tailrec
     def loop(a: Double, acc: Double): Double = a match {
+      case 0 => 1
       case 1 => acc
       case _ => loop(a - 1, acc * a)
     }
