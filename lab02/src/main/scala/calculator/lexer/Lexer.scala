@@ -14,7 +14,7 @@ class Lexer(source: Source) {
   var position: Int = 0
   var ch: Char = ' '
   var eof: Boolean = false
-  private var previousToken : Token = Token(BAD)
+  private var previousToken: Token = Token(BAD)
 
   /** Works like an iterator, and returns the next token from the input stream. */
   def nextToken: Token = {
@@ -29,7 +29,7 @@ class Lexer(source: Source) {
       val keywordPattern = "([a-zA-Z])".r
 
       ch match {
-        case '-' => previousToken.info match {
+        case '-' => previousToken.info match { // Check whether - is a negation or substraction
           case RPAREN | NUMLIT(_) | ID(_) | SQRT | GCD | FACTORIAL => setToken(MINUS)
           case _ => setToken(NEG)
         }
@@ -86,7 +86,7 @@ class Lexer(source: Source) {
   def readMultiple(allowed: List[Char]): String = {
     var str = "" + ch
     nextChar
-    var dotFound : Int = 0
+    var dotFound: Int = 0
     while (allowed.contains(ch) && !eof) {
       if (ch.equals('.')) dotFound += 1
       str += ch

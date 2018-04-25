@@ -48,16 +48,11 @@ object Tokens {
   case object NEG extends TokenInfo with TokenClass // (-x)
 
   /** Functions */
-  // case object MODINVERT extends TokenInfo with TokenClass
-  // case object PRIME extends TokenInfo with TokenClass
-  // case object SOLVE extends TokenInfo with TokenClass
-  // case object EGCD extends TokenInfo with TokenClass
-
-
   case object GCD extends TokenInfo with TokenClass // gcd
 
   case object SQRT extends TokenInfo with TokenClass // sqrt
 
+  /** Special tokens */
   case object EQSIGN extends TokenInfo with TokenClass // =
 
   case object LPAREN extends TokenInfo with TokenClass // (

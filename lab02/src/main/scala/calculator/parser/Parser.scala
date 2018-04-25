@@ -2,6 +2,7 @@ package calculator.parser
 
 import calculator.Main.memory
 import calculator.lexer._
+import calculator.parser.Trees.ComputeResult.ComputeResult
 
 import scala.io.Source
 
@@ -13,14 +14,21 @@ class Parser(source: Source) extends Lexer(source: Source) {
   /** Store the current token, as read from the lexer. */
   private var currentToken: Token = Token(BAD)
 
-  def computeSource: (Int, String, Double) = {
+  /** Compute the result of the tree returned by the Lexer */
+  def computeSource: (ComputeResult, String, Double) = {
     readToken
     parseExpr.compute
   }
 
+  /** Print the tree returned by the Lexer, use for debugging */
   def printTree: Unit = {
     readToken
     println(parseExpr)
+  }
+
+  /** Update currentToken using nextToken in the Lexer. */
+  def readToken: Unit = {
+    currentToken = nextToken
   }
 
   /** ""Eats"" the expected token, or terminates with an error. */
@@ -29,13 +37,14 @@ class Parser(source: Source) extends Lexer(source: Source) {
   /** Complains that what was found was not expected. The method accepts arbitrarily many arguments of type TokenClass */
   private def expected(tokenClass: TokenClass, more: TokenClass*): Nothing = fatalError("expected: " + (tokenClass :: more.toList).mkString(" or ") + ", found: " + currentToken)
 
+  /** Start parsing an expression */
   private def parseExpr: ExprTree = {
     parseEquals
   }
 
+  /** Parse an assignation */
   private def parseEquals: ExprTree = {
-
-    val e = parsePlusMinus
+    val e = parsePlusMinus // Priority
     if (currentToken.info == EQSIGN) {
       eat(EQSIGN)
       e match {
@@ -56,8 +65,9 @@ class Parser(source: Source) extends Lexer(source: Source) {
     }
   }
 
+  /** Parse addition and substraction */
   private def parsePlusMinus: ExprTree = {
-    var e = parseMultDivide
+    var e = parseMultDivide // Priority
     while (currentToken.info == PLUS || currentToken.info == MINUS) {
       if (currentToken.info == PLUS) {
         eat(PLUS)
@@ -70,8 +80,9 @@ class Parser(source: Source) extends Lexer(source: Source) {
     e
   }
 
+  /** Parse multiplication and division */
   private def parseMultDivide: ExprTree = {
-    var e = parseModulo
+    var e = parseModulo // Priority
     while (currentToken.info == MULT || currentToken.info == DIVIDE) {
       if (currentToken.info == MULT) {
         eat(MULT)
@@ -84,8 +95,9 @@ class Parser(source: Source) extends Lexer(source: Source) {
     e
   }
 
+  /** Parse modulo */
   private def parseModulo: ExprTree = {
-    var e = parsePower
+    var e = parsePower // Priority
     while (currentToken.info == MODULO) {
       eat(MODULO)
       e = Modulo(e, parsePower)
@@ -93,6 +105,7 @@ class Parser(source: Source) extends Lexer(source: Source) {
     e
   }
 
+  /** Parse power raising */
   private def parsePower: ExprTree = {
     var e = parseFactorial
     while (currentToken.info == POWER) {
@@ -102,6 +115,7 @@ class Parser(source: Source) extends Lexer(source: Source) {
     e
   }
 
+  /** Parse factorial */
   private def parseFactorial: ExprTree = {
     var e = parseSimpleExpr
     while (currentToken.info == FACTORIAL) {
@@ -111,8 +125,8 @@ class Parser(source: Source) extends Lexer(source: Source) {
     e
   }
 
+  /** Parse either a literal, an id for assignation, parentheses, result negation, or functions like sqrt and gcd */
   private def parseSimpleExpr: ExprTree = {
-    // Here you want to match simple expressions such as NUM(value) and parse them (for example with the parseExprTreeToken method).
     currentToken.info match {
       case LPAREN => parseParenthesis // Parenthesis
       case NUMLIT(value) => parseExprTreeToken(NumLit(value))
@@ -130,29 +144,27 @@ class Parser(source: Source) extends Lexer(source: Source) {
     }
   }
 
+  /** Parse a tuple for arguments to functions */
   private def parseParenthesisTuple: ExprTree = {
     eat(GCD)
     eat(LPAREN)
-    val lhs = parsePlusMinus
+    val lhs = parsePlusMinus // Go through priority again
     eat(COMMA)
     val rhs = parsePlusMinus
     eat(RPAREN)
     Gcd(lhs, rhs)
   }
 
+  /** Parse a tree and return the given token (consume the tree) */
   private def parseExprTreeToken[T <: ExprTree](retTree: T): ExprTree = {
     readToken
     retTree
   }
 
-  /** update currentToken using nextToken in the Lexer. */
-  def readToken: Unit = {
-    currentToken = nextToken
-  }
-
+  /** Parse parentheses for priority of operations */
   private def parseParenthesis: ExprTree = {
     eat(LPAREN)
-    val ret = parsePlusMinus
+    val ret = parsePlusMinus // Go through priority again
     eat(RPAREN)
     ret
   }

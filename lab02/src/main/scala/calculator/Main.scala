@@ -19,5 +19,5 @@ object Main {
     }
   }
 
-  def usage() = ???
+  def usage() = println("Type in something to compute. Valid operations are [+, -, *, /, %, !, ^, gdc, sqrt, =]")
 }
