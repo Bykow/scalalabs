@@ -25,7 +25,9 @@ class Lexer(source: Source) {
       if (position == 0) nextChar
       position = source.pos
 
+      // Match a single number as a double or int
       val numPattern = "([\\d]*\\.?[\\d]+)*".r
+      // Match a single letter
       val keywordPattern = "([a-zA-Z])".r
 
       ch match {
