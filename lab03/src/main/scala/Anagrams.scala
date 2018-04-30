@@ -53,11 +53,11 @@ object Anagrams extends App {
    *   "aet"-> List("ate", "eat", "tea")
    */
 
-  val matchingWords: Map[FingerPrint, List[Word]] = ???
+  val matchingWords: Map[FingerPrint, List[Word]] = dictionary.groupBy(fingerPrint)
 
 
   /** Returns all the anagrams of a given word. */
-  def wordAnagrams(word: Word): List[Word] = ???
+  def wordAnagrams(word: Word): List[Word] = matchingWords.getOrElse(fingerPrint(word), List())
 
   // Test code with for example:
   // println(wordAnagrams("eta"))
@@ -77,7 +77,13 @@ object Anagrams extends App {
    *  in the example above could have been displayed in some other order.
    */
 
-  def subseqs(fp: FingerPrint): List[FingerPrint] = ???
+  def subseqs(fp: FingerPrint): List[FingerPrint] = {
+    val p = for {
+      len <- 1 to fp.length
+      combinations <- fp combinations len
+    } yield combinations.mkString
+    List() ++ p
+  }
 
 
   // Test code with for example:
@@ -91,7 +97,7 @@ object Anagrams extends App {
    *  appear in `x`.
    */
 
-  def subtract(x: FingerPrint, y: FingerPrint): FingerPrint = ???
+  def subtract(x: FingerPrint, y: FingerPrint): FingerPrint = x.toList diff y.toList mkString
 
   // Test code with for example:
   // println(subtract("aabbcc", "abc"))
@@ -115,11 +121,18 @@ object Anagrams extends App {
    *
    *  Note: There is only one anagram of an empty sentence.
    */
-
-  def sentenceAnagrams(sentence: Sentence): List[Sentence] = ???
+//: List[Sentence]
+  def sentenceAnagrams(sentence: Sentence) = {
+    val printSentence = fingerPrint(sentence)
+    val subprints = subseqs(printSentence)
+    val pairsWithPrintAndAnagrams = subprints map (s => (s, matchingWords.getOrElse(s, None)))
+    val pairsAnagram = pairsWithPrintAndAnagrams.filter(_._2 != None)
+    pairsAnagram
+    //pairsAnagram map (s => )
+  }
 
   // Test code with for example:
-  // println(sentenceAnagrams(List("eat", "tea")))
+   println(sentenceAnagrams(List("eat", "tea")))
   // println(sentenceAnagrams(List("you", "olive")))
   // println(sentenceAnagrams(List("I", "love", "you")))
 

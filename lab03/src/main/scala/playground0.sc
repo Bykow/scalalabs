@@ -1,8 +1,9 @@
-for {
-  a <- "Hello".toCharArray
-} yield a
+import Anagrams._
 
+import scala.collection.immutable.List
 
-"heldeslo".sorted
+def sentenceAnagrams(sentence: Sentence): List[Sentence] = {
+  subseqs(fingerPrint(sentence)) map (word => wordAnagrams(word))
+}
 
-List("Hello", "this", "hi", "salad").mkString.sorted
+sentenceAnagrams(List("eat", "tea"))
